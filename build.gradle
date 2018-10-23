@@ -1,0 +1,91 @@
+// To add third party plugins and use them in rest of the file
+buildscript {
+    repositories {
+        mavenCentral()
+        jcenter()
+    }
+    dependencies {
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:2.0.5.RELEASE")
+    }
+}
+
+plugins {
+    id 'net.ltgt.apt' version '0.10'
+}
+
+apply plugin: 'java'
+apply plugin: 'org.springframework.boot'
+apply plugin: 'io.spring.dependency-management'
+
+// To create an executable fat jar.
+jar {
+    baseName = 'IdentityService'
+    version = '0.1.0'
+}
+
+// To override default project layout
+sourceSets {
+    main {
+        java {
+            srcDirs = ['src']
+        }
+        resources {
+            srcDirs = ['configuration']
+        }
+    }
+
+    test {
+        java {
+            srcDirs = ['tst']
+        }
+    }
+}
+
+compileJava {
+    options.failOnError = true
+}
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+allprojects {
+    repositories {
+        mavenCentral()
+        jcenter()
+        maven { url "https://jitpack.io" }
+    }
+}
+
+dependencies {
+    compile('org.springframework.boot:spring-boot-starter-web') {
+        exclude module: 'logback-classic'
+        exclude module: 'logback-core'
+        exclude module: 'log4j-to-slf4j'
+        exclude module: 'mongodb'
+    }
+    compile('org.mongodb:mongodb-driver-sync:3.7.1')
+    compile('org.mongodb:bson:3.7.1')
+    compile('org.mongodb:mongodb-driver-core:3.7.1')
+
+    compile group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.11.1'
+    compile group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.11.1'
+    compile group: 'org.apache.logging.log4j', name: 'log4j-slf4j-impl', version: '2.11.1'
+
+    compileOnly 'org.projectlombok:lombok:1.18.2'
+
+    apt 'org.projectlombok:lombok:1.18.2'
+
+    testCompile('org.springframework.boot:spring-boot-starter-test') {
+        exclude module: 'log4j-to-slf4j'
+    }
+    testCompile('org.jmockit:jmockit:1.8')
+
+    implementation 'com.github.anurag94y:ParkingTicketSystem:c_e_d_v0.0.3'
+}
+
+task runFatJar(type: JavaExec) {
+    main = '-jar'
+    args 'build/libs/ParkingTicketSystem-IdentityService.jar'
+}
+
+task server(dependsOn: [build, runFatJar])
