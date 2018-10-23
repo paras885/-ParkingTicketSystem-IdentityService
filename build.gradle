@@ -16,6 +16,7 @@ plugins {
 apply plugin: 'java'
 apply plugin: 'org.springframework.boot'
 apply plugin: 'io.spring.dependency-management'
+apply plugin: 'jacoco'
 
 // To create an executable fat jar.
 jar {
@@ -82,6 +83,18 @@ dependencies {
 
     implementation 'com.github.anurag94y:ParkingTicketSystem:c_e_d_v0.0.3'
 }
+
+jacocoTestCoverageVerification {
+    violationRules {
+        rule {
+            limit {
+                minimum = 0.95
+            }
+        }
+    }
+}
+
+check.dependsOn jacocoTestCoverageVerification
 
 task runFatJar(type: JavaExec) {
     main = '-jar'

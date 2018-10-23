@@ -26,6 +26,10 @@ public class OperatorActivity {
     @Resource(name = OperatorBusinessLogicImpl.BEAN_IDENTIFIER)
     private OperatorBusinessLogic operatorBusinessLogic;
 
+    /**
+     * @param operator is an instance of {@link Operator} which will contain operator details only id will not be there.
+     * @return <StatusCode, Operator> 2xx for ok or 4xx for exception[e.g 424 dependency failure].
+     */
     @RequestMapping(value = OPERATOR_RESOURCE_URL, method = RequestMethod.POST)
     @ResponseBody
     public ResponseEntity<Operator> addOperator(final @RequestBody Operator operator) {
@@ -43,6 +47,10 @@ public class OperatorActivity {
         return response;
     }
 
+    /**
+     * @param operatorId From database it will operator resource whose operatorId will be equal to this.
+     * @return <StatusCode, Operator> 2xx for ok or 4xx for exception[e.g 404 not found].
+     */
     @RequestMapping(value = OPERATOR_RESOURCE_URL + "/{operatorId}", method = RequestMethod.GET)
     @ResponseBody
     public ResponseEntity<Operator> getOperator(final @PathVariable String operatorId) {
@@ -62,6 +70,11 @@ public class OperatorActivity {
         return response;
     }
 
+    /**
+     * @param operatorId It will be helpful to fetch old record.
+     * @param operator This will hold new values which need to update/PUT.
+     * @return <StatusCode, Operator> 2xx for ok or 4xx for exception[e.g 400 for bad request], operator will be update one.
+     */
     @RequestMapping(value = OPERATOR_RESOURCE_URL + "/{operatorId}", method = RequestMethod.PUT)
     @ResponseBody
     public ResponseEntity<Operator> updateOperator(final @PathVariable String operatorId,
@@ -83,6 +96,10 @@ public class OperatorActivity {
         return response;
     }
 
+    /**
+     * @param operatorId For which we need to delete resource.
+     * @return <StatusCode, Message> 2xx for ok or 4xx for exception[e.g 424 dependency failure].
+     */
     @RequestMapping(value = OPERATOR_RESOURCE_URL + "/{operatorId}", method = RequestMethod.DELETE)
     @ResponseBody
     public ResponseEntity<String> deleteOperator(final @PathVariable String operatorId) {

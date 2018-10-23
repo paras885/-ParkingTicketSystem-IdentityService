@@ -14,7 +14,6 @@ import org.springframework.context.annotation.PropertySource;
 import static org.bson.codecs.configuration.CodecRegistries.fromProviders;
 import static org.bson.codecs.configuration.CodecRegistries.fromRegistries;
 
-// TODO: change hard coded strings to properties or user provided input.
 @Configuration
 @PropertySource(value = "classpath:mongodb.properties")
 public class MongoDBConfiguration {

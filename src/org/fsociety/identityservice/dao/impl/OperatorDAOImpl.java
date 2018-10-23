@@ -24,6 +24,9 @@ public class OperatorDAOImpl extends AbstractMongoBaseDAO implements OperatorDAO
     private final static String OPERATOR_COLLECTION_NAME = "Operators";
     private final static String OPERATOR_ID_FIELD_IDENTIFIER = "operatorId";
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Operator addOperator(final Operator input) throws DAORetryableException {
         log.info("OperatorDAOImpl's addOperator called with input : {}", input);
@@ -52,6 +55,9 @@ public class OperatorDAOImpl extends AbstractMongoBaseDAO implements OperatorDAO
         return uuidInStringForm.replaceAll("-","");
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Operator getOperator(final String operatorId) {
         log.info("OperatorDAOImpl's getOperator called with operatorId : {}", operatorId);
@@ -67,6 +73,9 @@ public class OperatorDAOImpl extends AbstractMongoBaseDAO implements OperatorDAO
     /*
      * There can be a case when someone miss to put operatorId in request because anyway he/she sending this information
      * in request itself so to avoid these type of edge cases we update operator pojo on our side.
+     */
+    /**
+     * {@inheritDoc}
      */
     @Override
     public Operator updateOperator(final String operatorId, final Operator operator) throws DAONonRetryableException {
@@ -90,6 +99,9 @@ public class OperatorDAOImpl extends AbstractMongoBaseDAO implements OperatorDAO
         return operator;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void deleteOperator(final String operatorId) throws DAORetryableException {
         log.info("OperatorDAOImpl's deleteOperator called with operatorId : {}", operatorId);

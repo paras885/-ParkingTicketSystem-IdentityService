@@ -63,6 +63,9 @@ public class OperatorBusinessLogicImpl implements OperatorBusinessLogic {
             }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void deleteOperator(final String operatorId) throws BusinessLogicRetryableException {
         try {
