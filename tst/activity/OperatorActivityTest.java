@@ -33,13 +33,13 @@ public class OperatorActivityTest extends AbstractBaseTest {
         final Operator expectedOperator = mockOperator(false);
         new Expectations() {
             {
-                businessLogic.addOperator(expectedOperator);
+                businessLogic.addResource(expectedOperator);
                 result = expectedOperator;
                 times = 1;
             }
         };
 
-        final ResponseEntity<Operator> response = operatorActivity.addOperator(expectedOperator);
+        final ResponseEntity<Operator> response = operatorActivity.addResource(expectedOperator);
         Assert.assertThat(response.getStatusCode(), Is.is(HttpStatus.OK));
         Assert.assertThat(response.getBody(), Is.is(expectedOperator));
     }
@@ -49,13 +49,13 @@ public class OperatorActivityTest extends AbstractBaseTest {
         final Operator expectedOperator = mockOperator(false);
         new Expectations() {
             {
-                businessLogic.addOperator(expectedOperator);
+                businessLogic.addResource(expectedOperator);
                 result = new BusinessLogicRetryableException("BusinessLogic failed.", new Exception());
                 times = 1;
             }
         };
 
-        final ResponseEntity<Operator> response = operatorActivity.addOperator(expectedOperator);
+        final ResponseEntity<Operator> response = operatorActivity.addResource(expectedOperator);
         Assert.assertThat(response.getStatusCode(), Is.is(HttpStatus.FAILED_DEPENDENCY));
         Assert.assertThat(response.getBody(), IsNull.nullValue());
     }
@@ -65,13 +65,13 @@ public class OperatorActivityTest extends AbstractBaseTest {
         final Operator expectedOperator = mockOperator(false);
         new Expectations() {
             {
-                businessLogic.getOperator(OPERATOR_ID);
+                businessLogic.getResource(OPERATOR_ID);
                 result = expectedOperator;
                 times = 1;
             }
         };
 
-        final ResponseEntity<Operator> response = operatorActivity.getOperator(OPERATOR_ID);
+        final ResponseEntity<Operator> response = operatorActivity.getResource(OPERATOR_ID);
         Assert.assertThat(response.getStatusCode(), Is.is(HttpStatus.OK));
         Assert.assertThat(response.getBody(), Is.is(expectedOperator));
     }
@@ -80,13 +80,13 @@ public class OperatorActivityTest extends AbstractBaseTest {
     public void testGetOperator_whenBusinessLogicFailToProcess() throws BusinessLogicNonRetryableException {
         new Expectations() {
             {
-                businessLogic.getOperator(OPERATOR_ID);
+                businessLogic.getResource(OPERATOR_ID);
                 result = new BusinessLogicNonRetryableException("Failed to fetch", new NullPointerException());
                 times = 1;
             }
         };
 
-        final ResponseEntity<Operator> response = operatorActivity.getOperator(OPERATOR_ID);
+        final ResponseEntity<Operator> response = operatorActivity.getResource(OPERATOR_ID);
         Assert.assertThat(response.getStatusCode(), Is.is(HttpStatus.NOT_FOUND));
         Assert.assertThat(response.getBody(), IsNull.nullValue());
     }
@@ -96,13 +96,13 @@ public class OperatorActivityTest extends AbstractBaseTest {
         final Operator expectedOperator = mockOperator(false);
         new Expectations() {
             {
-                businessLogic.updateOperator(OPERATOR_ID, expectedOperator);
+                businessLogic.updateResource(OPERATOR_ID, expectedOperator);
                 result = expectedOperator;
                 times = 1;
             }
         };
 
-        final ResponseEntity<Operator> response = operatorActivity.updateOperator(OPERATOR_ID, expectedOperator);
+        final ResponseEntity<Operator> response = operatorActivity.updateResource(OPERATOR_ID, expectedOperator);
         Assert.assertThat(response.getStatusCode(), Is.is(HttpStatus.OK));
         Assert.assertThat(response.getBody(), Is.is(expectedOperator));
     }
@@ -112,13 +112,13 @@ public class OperatorActivityTest extends AbstractBaseTest {
         final Operator input = mockOperator(false);
         new Expectations() {
             {
-                businessLogic.updateOperator(OPERATOR_ID, input);
+                businessLogic.updateResource(OPERATOR_ID, input);
                 result = new BusinessLogicNonRetryableException("BusinessLogic failed.", new Exception());
                 times = 1;
             }
         };
 
-        final ResponseEntity<Operator> response = operatorActivity.updateOperator(OPERATOR_ID, input);
+        final ResponseEntity<Operator> response = operatorActivity.updateResource(OPERATOR_ID, input);
         Assert.assertThat(response.getStatusCode(), Is.is(HttpStatus.BAD_REQUEST));
         Assert.assertThat(response.getBody(), IsNull.nullValue());
     }
@@ -127,12 +127,12 @@ public class OperatorActivityTest extends AbstractBaseTest {
     public void testDeleteOperator_happyCase() throws BusinessLogicRetryableException {
         new Expectations() {
             {
-                businessLogic.deleteOperator(OPERATOR_ID);
+                businessLogic.deleteResource(OPERATOR_ID);
                 times = 1;
             }
         };
 
-        final  ResponseEntity<String> response = operatorActivity.deleteOperator(OPERATOR_ID);
+        final  ResponseEntity<String> response = operatorActivity.deleteResource(OPERATOR_ID);
         Assert.assertThat(response.getStatusCode(), Is.is(HttpStatus.OK));
         Assert.assertThat(response.getBody(), StringContains.containsString("Success"));
     }
@@ -141,13 +141,13 @@ public class OperatorActivityTest extends AbstractBaseTest {
     public void testDeleteOperator_whenBusinessLogicFailToProcess() throws BusinessLogicRetryableException {
         new Expectations() {
             {
-                businessLogic.deleteOperator(OPERATOR_ID);
+                businessLogic.deleteResource(OPERATOR_ID);
                 result = new BusinessLogicRetryableException("Businesslogic failed.", new Exception());
                 times = 1;
             }
         };
 
-        final ResponseEntity<String> response = operatorActivity.deleteOperator(OPERATOR_ID);
+        final ResponseEntity<String> response = operatorActivity.deleteResource(OPERATOR_ID);
         Assert.assertThat(response.getStatusCode(), Is.is(HttpStatus.FAILED_DEPENDENCY));
         Assert.assertThat(response.getBody(), StringContains.containsString("Error"));
     }

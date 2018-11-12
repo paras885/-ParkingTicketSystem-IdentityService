@@ -15,12 +15,13 @@ import static org.bson.codecs.configuration.CodecRegistries.fromProviders;
 import static org.bson.codecs.configuration.CodecRegistries.fromRegistries;
 
 @Configuration
-@PropertySource(value = "classpath:mongodb.properties")
+@PropertySource(value = MongoDBConfiguration.MONGO_PROPERTIES_FILE_SOURCE)
 public class MongoDBConfiguration {
 
-    public final static String MONGO_CLIENT_BEAN_NAME = "mongoClientBean";
-    public final static String MONGO_DATABASE_BEAN_NAME = "mongoDatabaseBean";
-    public final static String MONGO_CODEC_REGISTRY_BEAN_NAME = "mongoCodecRegistry";
+    public final static String MONGO_CLIENT_BEAN_IDENTIFIER = "mongoClientBean";
+    public final static String MONGO_DATABASE_BEAN_IDENTIFIER = "mongoDatabaseBean";
+    public final static String MONGO_CODEC_REGISTRY_BEAN_IDENTIFIER = "mongoCodecRegistry";
+    public final static String MONGO_PROPERTIES_FILE_SOURCE = "classpath:mongodb.properties";
 
     @Value("${username}")
     private String username;
@@ -34,19 +35,19 @@ public class MongoDBConfiguration {
     @Value("${database_name}")
     private String database_name;
 
-    @Bean(name = MONGO_CLIENT_BEAN_NAME)
+    @Bean(name = MONGO_CLIENT_BEAN_IDENTIFIER)
     public MongoClient getMongoClient() {
         final String mongodbUrl = String.format("mongodb+srv://%s:%s@%s/test", username, password, cluster_url);
         return MongoClients.create(mongodbUrl);
     }
 
-    @Bean(name = MONGO_CODEC_REGISTRY_BEAN_NAME)
+    @Bean(name = MONGO_CODEC_REGISTRY_BEAN_IDENTIFIER)
     public CodecRegistry getCodecRegistry() {
         return fromRegistries(MongoClientSettings.getDefaultCodecRegistry(),
             fromProviders(PojoCodecProvider.builder().automatic(true).build()));
     }
 
-    @Bean(name = MONGO_DATABASE_BEAN_NAME)
+    @Bean(name = MONGO_DATABASE_BEAN_IDENTIFIER)
     public MongoDatabase getMongoDatabase() {
         return getMongoClient()
             .getDatabase(database_name)

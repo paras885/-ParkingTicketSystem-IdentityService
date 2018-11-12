@@ -1,0 +1,2 @@
+companyId, floorNumber, slotNumber, isReserved, vehicleType
+notValidId, 5th, 1B, true, TWO_WHEELER

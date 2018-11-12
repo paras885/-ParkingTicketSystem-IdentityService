@@ -4,8 +4,7 @@ import com.mongodb.MongoException;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
-import com.pts.common.entities.Operator;
-
+import com.pts.common.entities.Company;
 import common.AbstractBaseTest;
 import mockit.Expectations;
 import mockit.Injectable;
@@ -13,7 +12,7 @@ import mockit.Mocked;
 import mockit.Tested;
 import mockit.integration.junit4.JMockit;
 import org.bson.conversions.Bson;
-import org.fsociety.identityservice.dao.impl.OperatorDAOImpl;
+import org.fsociety.identityservice.dao.impl.CompanyDAOImpl;
 import org.fsociety.identityservice.exception.DAONonRetryableException;
 import org.fsociety.identityservice.exception.DAORetryableException;
 import org.hamcrest.core.Is;
@@ -23,10 +22,10 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 @RunWith(JMockit.class)
-public class OperatorDAOImplTest extends AbstractBaseTest {
+public class CompanyDAOImplTest extends AbstractBaseTest {
 
     @Tested
-    private OperatorDAOImpl operatorDAO;
+    private CompanyDAOImpl companyDAO;
 
     @Injectable
     private MongoDatabase mongoDatabase;
@@ -34,12 +33,12 @@ public class OperatorDAOImplTest extends AbstractBaseTest {
     @Mocked
     private MongoCollection mongoCollection;
 
-    private final static String COLLECTION_NAME = "Operators";
-    private final static Class COLLECTION_CLASS = Operator.class;
-    private final static String OPERATOR_ID_FIELD_IDENTIFIER = "operatorId";
+    private final static String COLLECTION_NAME = "Companies";
+    private final static Class COLLECTION_CLASS = Company.class;
+    private final static String COMPANY_ID_FIELD_IDENTIFIER = "companyId";
 
     @Test
-    public void testAddOperator_happyCase() throws DAORetryableException {
+    public void testAddCompany_happyCase() throws DAORetryableException {
         new Expectations() {
             {
                 mongoDatabase.getCollection(COLLECTION_NAME, COLLECTION_CLASS);
@@ -51,17 +50,16 @@ public class OperatorDAOImplTest extends AbstractBaseTest {
             }
         };
 
-        final Operator expectedOperator = mockOperator(false);
-        final Operator actualOperator = operatorDAO.add(expectedOperator);
+        final Company expectedCompany = mockCompany();
+        final Company actualCompany = companyDAO.add(expectedCompany);
 
         // Asserting few fields and then assuming other fields will be saved similarly.
-        Assert.assertThat(actualOperator.getName(), Is.is(expectedOperator.getName()));
-        Assert.assertThat(actualOperator.getCompanyId(), Is.is(expectedOperator.getCompanyId()));
-        Assert.assertThat(actualOperator.getPassword(), Is.is(expectedOperator.getPassword()));
+        Assert.assertThat(actualCompany.getName(), Is.is(expectedCompany.getName()));
+        Assert.assertThat(actualCompany.getCompanyId(), Is.is(expectedCompany.getCompanyId()));
     }
 
     @Test(expected = DAORetryableException.class)
-    public void testAddOperator_whenMongoFailToInsertDocument() throws DAORetryableException {
+    public void testAddCompany_whenMongoFailToInsertDocument() throws DAORetryableException {
         new Expectations() {
             {
                 mongoDatabase.getCollection(COLLECTION_NAME, COLLECTION_CLASS);
@@ -74,12 +72,12 @@ public class OperatorDAOImplTest extends AbstractBaseTest {
             }
         };
 
-        operatorDAO.add(mockOperator(false));
+        companyDAO.add(mockCompany());
     }
 
     @Test
-    public void testGetOperator_happyCase(@Mocked final FindIterable iterable) {
-        final Operator expectedOperator = mockOperator(false);
+    public void testGetCompany_happyCase(@Mocked final FindIterable iterable) {
+        final Company expectedCompany = mockCompany();
         new Expectations() {
             {
                 mongoDatabase.getCollection(COLLECTION_NAME, COLLECTION_CLASS);
@@ -91,18 +89,18 @@ public class OperatorDAOImplTest extends AbstractBaseTest {
                 times = 1;
 
                 iterable.first();
-                result = expectedOperator;
+                result = expectedCompany;
                 times = 1;
             }
         };
 
-        final Operator actualOperator = operatorDAO.get(OPERATOR_ID);
+        final Company actualCompany = companyDAO.get(COMPANY_ID);
 
-        Assert.assertThat(actualOperator, Is.is(expectedOperator));
+        Assert.assertThat(actualCompany, Is.is(expectedCompany));
     }
 
     @Test
-    public void testGetOperator_whenOperatorNotPresent(@Mocked final FindIterable iterable) {
+    public void testGetCompany_whenCompanyNotPresent(@Mocked final FindIterable iterable) {
         new Expectations() {
             {
                 mongoDatabase.getCollection(COLLECTION_NAME, COLLECTION_CLASS);
@@ -119,57 +117,57 @@ public class OperatorDAOImplTest extends AbstractBaseTest {
             }
         };
 
-        Assert.assertThat(operatorDAO.get(OPERATOR_ID), IsNull.nullValue());
+        Assert.assertThat(companyDAO.get(COMPANY_ID), IsNull.nullValue());
     }
 
     @Test
-    public void testUpdateOperator_happyCase() throws DAONonRetryableException {
-        final Operator expectedOperator = mockOperator(false);
+    public void testUpdateCompany_happyCase() throws DAONonRetryableException {
+        final Company expectedCompany = mockCompany();
         new Expectations() {
             {
                 mongoDatabase.getCollection(COLLECTION_NAME, COLLECTION_CLASS);
                 result = mongoCollection;
                 times = 1;
 
-                mongoCollection.findOneAndReplace(withInstanceOf(Bson.class), expectedOperator);
-                result = expectedOperator;
+                mongoCollection.findOneAndReplace(withInstanceOf(Bson.class), expectedCompany);
+                result = expectedCompany;
                 times = 1;
             }
         };
 
-        Assert.assertThat(operatorDAO.update(OPERATOR_ID, expectedOperator), Is.is(expectedOperator));
+        Assert.assertThat(companyDAO.update(COMPANY_ID, expectedCompany), Is.is(expectedCompany));
     }
 
     @Test
-    public void testUpdateOperator_whenOperatorIdIsNotPresentInOperator() throws DAONonRetryableException {
-        final Operator expectedOperatorWithoutOperatorId = mockOperator(false);
-        expectedOperatorWithoutOperatorId.setOperatorId(null);
+    public void testUpdateCompany_whenCompanyIdIsNotPresentInCompany() throws DAONonRetryableException {
+        final Company expectedCompanyWithoutCompanyId = mockCompany();
+        expectedCompanyWithoutCompanyId.setCompanyId(null);
 
-        final Operator expectedOperatorWithOperatorId = mockOperator(false);
+        final Company expectedCompanyWithCompanyId = mockCompany();
         new Expectations() {
             {
                 mongoDatabase.getCollection(COLLECTION_NAME, COLLECTION_CLASS);
                 result = mongoCollection;
                 times = 1;
 
-                mongoCollection.findOneAndReplace(withInstanceOf(Bson.class), expectedOperatorWithOperatorId);
-                result = expectedOperatorWithOperatorId;
+                mongoCollection.findOneAndReplace(withInstanceOf(Bson.class), expectedCompanyWithCompanyId);
+                result = expectedCompanyWithCompanyId;
                 times = 1;
             }
         };
 
-        Assert.assertThat(operatorDAO.update(OPERATOR_ID, expectedOperatorWithoutOperatorId),
-            Is.is(expectedOperatorWithOperatorId));
+        Assert.assertThat(companyDAO.update(COMPANY_ID, expectedCompanyWithoutCompanyId),
+            Is.is(expectedCompanyWithCompanyId));
     }
 
     @Test(expected = DAONonRetryableException.class)
-    public void testUpdateOperator_whenOperatorIdFromRequestAndOperatorAreNotEqual() throws DAONonRetryableException {
-        final Operator operator = mockOperator(false);
-        operatorDAO.update("randomOperatorId", operator);
+    public void testUpdateCompany_whenCompanyIdFromRequestAndCompanyAreNotEqual() throws DAONonRetryableException {
+        final Company company = mockCompany();
+        companyDAO.update("randomCompanyId", company);
     }
 
     @Test
-    public void testDeleteOperator_happyCase() throws DAORetryableException {
+    public void testDeleteCompany_happyCase() throws DAORetryableException {
         new Expectations() {
             {
                 mongoDatabase.getCollection(COLLECTION_NAME, COLLECTION_CLASS);
@@ -181,11 +179,11 @@ public class OperatorDAOImplTest extends AbstractBaseTest {
             }
         };
 
-        operatorDAO.delete(OPERATOR_ID);
+        companyDAO.delete(COMPANY_ID);
     }
 
     @Test(expected = DAORetryableException.class)
-    public void testDeleteOperator_whenMongoFailToDeleteOperatorResource() throws DAORetryableException {
+    public void testDeleteCompany_whenMongoFailToDeleteCompanyResource() throws DAORetryableException {
         new Expectations() {
             {
                 mongoDatabase.getCollection(COLLECTION_NAME, COLLECTION_CLASS);
@@ -198,6 +196,6 @@ public class OperatorDAOImplTest extends AbstractBaseTest {
             }
         };
 
-        operatorDAO.delete(OPERATOR_ID);
+        companyDAO.delete(COMPANY_ID);
     }
 }

@@ -31,13 +31,13 @@ public class OperatorBusinessLogicImplTest extends AbstractBaseTest {
         final Operator expectedOperator = mockOperator(false);
         new Expectations() {
             {
-                operatorDAO.addOperator(expectedOperator);
+                operatorDAO.add(expectedOperator);
                 result = expectedOperator;
                 times = 1;
             }
         };
 
-        final Operator actualOperator = operatorBusinessLogic.addOperator(expectedOperator);
+        final Operator actualOperator = operatorBusinessLogic.addResource(expectedOperator);
         Assert.assertThat(actualOperator, Is.is(expectedOperator));
     }
 
@@ -47,13 +47,13 @@ public class OperatorBusinessLogicImplTest extends AbstractBaseTest {
             final Operator input = mockOperator(false);
             new Expectations() {
                 {
-                    operatorDAO.addOperator(input);
+                    operatorDAO.add(input);
                     result = new DAORetryableException("DAO Failed.", new NullPointerException());
                     times = 1;
                 }
             };
 
-            operatorBusinessLogic.addOperator(input);
+            operatorBusinessLogic.addResource(input);
     }
 
     @Test
@@ -61,13 +61,13 @@ public class OperatorBusinessLogicImplTest extends AbstractBaseTest {
         final Operator expectedOperator = mockOperator(false);
         new Expectations() {
             {
-                operatorDAO.getOperator(OPERATOR_ID);
+                operatorDAO.get(OPERATOR_ID);
                 result = expectedOperator;
                 times = 1;
             }
         };
 
-        final Operator actualOperator = operatorBusinessLogic.getOperator(OPERATOR_ID);
+        final Operator actualOperator = operatorBusinessLogic.getResource(OPERATOR_ID);
         Assert.assertThat(actualOperator, Is.is(expectedOperator));
     }
 
@@ -75,13 +75,13 @@ public class OperatorBusinessLogicImplTest extends AbstractBaseTest {
     public void testGetOperator_whenOperatorIsNotPresent() throws BusinessLogicNonRetryableException {
         new Expectations() {
             {
-                operatorDAO.getOperator(OPERATOR_ID);
+                operatorDAO.get(OPERATOR_ID);
                 result = null;
                 times = 1;
             }
         };
 
-        operatorBusinessLogic.getOperator(OPERATOR_ID);
+        operatorBusinessLogic.getResource(OPERATOR_ID);
     }
 
     @Test
@@ -89,13 +89,13 @@ public class OperatorBusinessLogicImplTest extends AbstractBaseTest {
         final Operator expectedOperator = mockOperator(false);
         new Expectations() {
             {
-                operatorDAO.updateOperator(OPERATOR_ID, expectedOperator);
+                operatorDAO.update(OPERATOR_ID, expectedOperator);
                 result = expectedOperator;
                 times = 1;
             }
         };
 
-        final Operator actualOperator = operatorBusinessLogic.updateOperator(OPERATOR_ID, expectedOperator);
+        final Operator actualOperator = operatorBusinessLogic.updateResource(OPERATOR_ID, expectedOperator);
         Assert.assertThat(actualOperator, Is.is(expectedOperator));
     }
 
@@ -105,12 +105,12 @@ public class OperatorBusinessLogicImplTest extends AbstractBaseTest {
             final Operator expectedOperator = mockOperator(false);
             new Expectations() {
                 {
-                    operatorDAO.updateOperator(OPERATOR_ID, expectedOperator);
+                    operatorDAO.update(OPERATOR_ID, expectedOperator);
                     result = new DAONonRetryableException("DAO failed.");
                     times = 1;
                 }
             };
 
-            operatorBusinessLogic.updateOperator(OPERATOR_ID, expectedOperator);
+            operatorBusinessLogic.updateResource(OPERATOR_ID, expectedOperator);
     }
 }
