@@ -9,4 +9,8 @@ public class BusinessLogicNonRetryableException extends Exception {
     public BusinessLogicNonRetryableException(final String exceptionMessage, final Throwable exceptionCause) {
         super(exceptionMessage, exceptionCause);
     }
+
+    public BusinessLogicNonRetryableException(final String exceptionMessage) {
+        super(exceptionMessage);
+    }
 }

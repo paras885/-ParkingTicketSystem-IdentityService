@@ -9,9 +9,11 @@ import com.mongodb.client.model.Updates;
 import com.mongodb.client.model.WriteModel;
 import com.pts.common.entities.Company;
 import com.pts.common.entities.ParkingSlot;
+import com.pts.common.entities.ParkingSlotVacantStatus;
 import lombok.extern.slf4j.Slf4j;
 import org.bson.conversions.Bson;
 import org.fsociety.identityservice.dao.ParkingSlotDAO;
+import org.fsociety.identityservice.exception.DAORetryableException;
 import org.fsociety.identityservice.pojo.ParkingSlotSearchInput;
 import org.springframework.stereotype.Component;
 
@@ -19,6 +21,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.UUID;
 
 @Slf4j
@@ -31,6 +34,7 @@ public class ParkingSlotDAOImpl extends AbstractBaseCRUDDAOImpl<ParkingSlot> imp
     private final static String COMPANY_ID_FIELD_IDENTIFIER = "companyId";
     private final static String BUILDING_ID_FIELD_IDENTIFIER = "buildingId";
     private final static String BUILDING_IDS_FIELD_IDENTIFIER = "buildingIds";
+    private final static String PARKING_SLOT_VACANT_STATUS_FIELD_IDENTIFIER = "vacantStatus";
 
     private final static String LIMIT_IDENTIFIER_IN_SEARCH_PARAM = "limit";
 
@@ -110,6 +114,21 @@ public class ParkingSlotDAOImpl extends AbstractBaseCRUDDAOImpl<ParkingSlot> imp
             .forEach(updateParkingSlotsIntoList);
 
         return parkingSlots;
+    }
+
+    @Override
+    public void preReserveParkingSlot(final ParkingSlot parkingSlot) throws DAORetryableException {
+        Bson filterQuery = Filters.and(Filters.eq(PARKING_SLOT_ID_FIELD_IDENTIFIER, parkingSlot.getParkingSlotId()),
+            Filters.eq(PARKING_SLOT_VACANT_STATUS_FIELD_IDENTIFIER, ParkingSlotVacantStatus.EMPTY));
+        parkingSlot.setVacantStatus(ParkingSlotVacantStatus.PRE_RESERVATION);
+
+        final ParkingSlot slotBeforeUpdate = (ParkingSlot) getParkingSlotCollection().findOneAndReplace(filterQuery,
+            parkingSlot);
+
+        if (Objects.isNull(slotBeforeUpdate)
+            || slotBeforeUpdate.getVacantStatus() == ParkingSlotVacantStatus.PRE_RESERVATION) {
+            throw new DAORetryableException("Other process already reserved it, try with other slot");
+        }
     }
 
     @Override

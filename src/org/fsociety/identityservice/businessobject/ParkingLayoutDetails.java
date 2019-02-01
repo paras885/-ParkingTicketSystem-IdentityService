@@ -1,6 +1,7 @@
 package org.fsociety.identityservice.businessobject;
 
 import com.pts.common.entities.ParkingSlot;
+import com.pts.common.entities.ParkingSlotVacantStatus;
 import com.pts.common.entities.VehicleType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -84,6 +85,7 @@ public class ParkingLayoutDetails {
             .slotNumber(slotNumber)
             .isReserved(isReserved)
             .vehicleType(vehicleType)
+            .vacantStatus(ParkingSlotVacantStatus.EMPTY)
             .build();
 
         distinctCompanyIds.add(companyId);

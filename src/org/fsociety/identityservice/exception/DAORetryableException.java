@@ -9,4 +9,8 @@ public class DAORetryableException extends Exception {
     public DAORetryableException(final String message, final Throwable cause) {
         super(message, cause);
     }
+
+    public DAORetryableException(final String message) {
+        super(message);
+    }
 }

@@ -1,6 +1,7 @@
 package org.fsociety.identityservice.businesslogic;
 
 import com.pts.common.entities.ParkingSlot;
+import org.fsociety.identityservice.exception.BusinessLogicNonRetryableException;
 import org.fsociety.identityservice.exception.BusinessLogicRetryableException;
 import org.fsociety.identityservice.pojo.ParkingSlotSearchInput;
 
@@ -15,4 +16,13 @@ public interface ParkingSlotBusinessLogic extends BaseBusinessLogic<ParkingSlot>
      */
     List<ParkingSlot> getParkingSlotsBySearchInput(final ParkingSlotSearchInput input)
         throws BusinessLogicRetryableException;
+
+    /**
+     * @param requirementsForSlot is an instance of {@link ParkingSlot} which hold requirements for eligible parking slot.
+     * @return output is also an instance of {@link ParkingSlot} which hold parkingSlotId and vacantStatus will be PRERESERVATION.
+     * @throws BusinessLogicRetryableException If in 3 tries we are not able to reserve any slot ask for fresh request.
+     * @throws BusinessLogicNonRetryableException No slot available.
+     */
+    ParkingSlot preReserveParkingSlot(final ParkingSlot requirementsForSlot)
+        throws BusinessLogicNonRetryableException, BusinessLogicRetryableException;
 }
