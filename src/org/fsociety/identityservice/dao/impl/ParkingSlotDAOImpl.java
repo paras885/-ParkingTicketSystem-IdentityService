@@ -13,6 +13,7 @@ import com.pts.common.entities.ParkingSlotVacantStatus;
 import lombok.extern.slf4j.Slf4j;
 import org.bson.conversions.Bson;
 import org.fsociety.identityservice.dao.ParkingSlotDAO;
+import org.fsociety.identityservice.exception.DAONonRetryableException;
 import org.fsociety.identityservice.exception.DAORetryableException;
 import org.fsociety.identityservice.pojo.ParkingSlotSearchInput;
 import org.springframework.stereotype.Component;
@@ -35,6 +36,7 @@ public class ParkingSlotDAOImpl extends AbstractBaseCRUDDAOImpl<ParkingSlot> imp
     private final static String BUILDING_ID_FIELD_IDENTIFIER = "buildingId";
     private final static String BUILDING_IDS_FIELD_IDENTIFIER = "buildingIds";
     private final static String PARKING_SLOT_VACANT_STATUS_FIELD_IDENTIFIER = "vacantStatus";
+    private final static String PARKING_SLOT_PARKED_VEHICLE_NUMBER = "parkedVehicleNumber";
 
     private final static String LIMIT_IDENTIFIER_IN_SEARCH_PARAM = "limit";
 
@@ -128,6 +130,22 @@ public class ParkingSlotDAOImpl extends AbstractBaseCRUDDAOImpl<ParkingSlot> imp
         if (Objects.isNull(slotBeforeUpdate)
             || slotBeforeUpdate.getVacantStatus() == ParkingSlotVacantStatus.PRE_RESERVATION) {
             throw new DAORetryableException("Other process already reserved it, try with other slot");
+        }
+    }
+
+    @Override
+    public void vacantParkingSlot(final ParkingSlot parkingSlot) throws DAONonRetryableException {
+        Bson filterQuery = Filters.and(Filters.eq(PARKING_SLOT_ID_FIELD_IDENTIFIER, parkingSlot.getParkingSlotId()),
+                Filters.eq(PARKING_SLOT_VACANT_STATUS_FIELD_IDENTIFIER, ParkingSlotVacantStatus.RESERVED),
+                Filters.eq(PARKING_SLOT_PARKED_VEHICLE_NUMBER, parkingSlot.getParkedVehicleNumber()));
+        parkingSlot.setVacantStatus(ParkingSlotVacantStatus.EMPTY);
+
+        final ParkingSlot slotBeforeUpdate = (ParkingSlot) getParkingSlotCollection().findOneAndReplace(filterQuery,
+                parkingSlot);
+
+        if (Objects.isNull(slotBeforeUpdate)
+                || slotBeforeUpdate.getVacantStatus() == ParkingSlotVacantStatus.PRE_RESERVATION) {
+            throw new DAONonRetryableException("Mentioned vehicle is not in parkingSlot, please verify request");
         }
     }
 

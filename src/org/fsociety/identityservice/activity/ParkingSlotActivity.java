@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -24,6 +25,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 import static org.fsociety.identityservice.activity.BuildingActivity.BUILDING_RESOURCE_URL;
@@ -99,8 +101,7 @@ public class ParkingSlotActivity extends AbstractBaseCRUDActivity<ParkingSlot> {
 
     @PostMapping(name = "Pre-reserve parking slot before final confirmation", value = "/preReservation")
     @ResponseBody
-    public ResponseEntity<ParkingSlot> preReserveParkingSlot(@RequestBody final ParkingSlot requirementsForSlot)
-        throws BusinessLogicNonRetryableException, BusinessLogicRetryableException {
+    public ResponseEntity<ParkingSlot> preReserveParkingSlot(@RequestBody final ParkingSlot requirementsForSlot) {
             ResponseEntity<ParkingSlot> response = null;
             try {
                 final ParkingSlot preReservedParkingSlot = businessLogic.preReserveParkingSlot(requirementsForSlot);
@@ -112,6 +113,21 @@ public class ParkingSlotActivity extends AbstractBaseCRUDActivity<ParkingSlot> {
             }
 
             return response;
+    }
+
+    @PutMapping(name = "Vacant parking slot for given parking slot and vehicle number",
+            value = "/{parkingSlotId}/vacantSlot")
+    @ResponseBody
+    public ResponseEntity<ParkingSlot> vacantParkingSlot(@RequestBody final ParkingSlot vacantRequest) {
+        ResponseEntity<ParkingSlot> response = null;
+        final Optional<ParkingSlot> vacantParkingSlot = businessLogic.vacantParkingSlot(vacantRequest);
+        if (vacantParkingSlot.isPresent()) {
+            response = new ResponseEntity<ParkingSlot>(vacantParkingSlot.get(), HttpStatus.OK);
+        } else {
+            response = new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+        }
+
+        return response;
     }
 
     @Override

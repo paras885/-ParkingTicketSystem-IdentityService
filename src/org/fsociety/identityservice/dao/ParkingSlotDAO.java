@@ -1,6 +1,7 @@
 package org.fsociety.identityservice.dao;
 
 import com.pts.common.entities.ParkingSlot;
+import org.fsociety.identityservice.exception.DAONonRetryableException;
 import org.fsociety.identityservice.exception.DAORetryableException;
 import org.fsociety.identityservice.pojo.ParkingSlotSearchInput;
 
@@ -13,4 +14,6 @@ public interface ParkingSlotDAO extends BaseCRUDDAO<ParkingSlot> {
     List<ParkingSlot> fetchParkingSlotsBySearchInput(final ParkingSlotSearchInput searchInput);
 
     void preReserveParkingSlot(final ParkingSlot parkingSlot) throws DAORetryableException;
+
+    void vacantParkingSlot(final ParkingSlot parkingSlot) throws DAONonRetryableException;
 }

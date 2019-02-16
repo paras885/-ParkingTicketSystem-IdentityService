@@ -6,6 +6,7 @@ import org.fsociety.identityservice.exception.BusinessLogicRetryableException;
 import org.fsociety.identityservice.pojo.ParkingSlotSearchInput;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface ParkingSlotBusinessLogic extends BaseBusinessLogic<ParkingSlot> {
 
@@ -25,4 +26,6 @@ public interface ParkingSlotBusinessLogic extends BaseBusinessLogic<ParkingSlot>
      */
     ParkingSlot preReserveParkingSlot(final ParkingSlot requirementsForSlot)
         throws BusinessLogicNonRetryableException, BusinessLogicRetryableException;
+
+    Optional<ParkingSlot> vacantParkingSlot(final ParkingSlot vacantSlotRequest);
 }

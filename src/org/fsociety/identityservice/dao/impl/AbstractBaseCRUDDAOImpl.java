@@ -3,6 +3,7 @@ package org.fsociety.identityservice.dao.impl;
 import com.mongodb.MongoException;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.Filters;
+import com.mongodb.client.result.UpdateResult;
 import lombok.extern.slf4j.Slf4j;
 import org.bson.conversions.Bson;
 import org.fsociety.identityservice.dao.AbstractMongoBaseDAO;
@@ -71,24 +72,29 @@ public abstract class AbstractBaseCRUDDAOImpl<ResourceType> extends AbstractMong
     public ResourceType update(final String id, final ResourceType resource) throws DAONonRetryableException {
         log.info("AbstractDAO's update called with id : {}, and resource : {}", id, resource);
 
+        validateResourceForUpdateRequest(id, resource);
+
+        final Bson filterQuery = Filters.eq(getResourceIdFieldIdentifier(), id);
+        final ResourceType returnedResource = (ResourceType) getResourceCollection().findOneAndReplace(filterQuery,
+                resource);
+
+        if (Objects.nonNull(returnedResource)) {
+            return resource;
+        } else {
+            throw new DAONonRetryableException(String.format("Resource not updated for given resourceId", id));
+        }
+    }
+
+    private void validateResourceForUpdateRequest(final String id, final ResourceType resource)
+            throws DAONonRetryableException {
         if (StringUtils.isEmpty(getResourceId(resource))) {
             log.warn("Resource: {} id was null thus setting request's path id: {}", resource, id);
             setResourceId(resource, id);
         } else if (getResourceId(resource).compareTo(id) != 0) {
             log.error("Error occurred because request's path id : {} and resource's id : {} is not equal", id,
-                getResourceId(resource));
+                    getResourceId(resource));
             throw new DAONonRetryableException("Id in request's path and resource's id are not equal");
         }
-
-        final Bson query = Filters.eq(getResourceIdFieldIdentifier(), id);
-        final ResourceType returnedResource = (ResourceType) getResourceCollection().findOneAndReplace(query,
-            resource);
-
-        if (Objects.isNull(returnedResource)) {
-            throw new DAONonRetryableException(String.format("Resource not present for given resourceId", id));
-        }
-
-        return resource;
     }
 
     /**

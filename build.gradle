@@ -17,6 +17,7 @@ apply plugin: 'java'
 apply plugin: 'org.springframework.boot'
 apply plugin: 'io.spring.dependency-management'
 apply plugin: 'jacoco'
+apply plugin: 'idea'
 
 // To create an executable fat jar.
 jar {
@@ -83,7 +84,7 @@ dependencies {
     testCompile('org.jmockit:jmockit:1.8')
     testAnnotationProcessor 'org.jmockit:jmockit:1.8'
 
-    implementation 'com.github.anurag94y:ParkingTicketSystem:c_e_d_v0.1.0'
+    implementation 'com.github.anurag94y:ParkingTicketSystem:c_e_d_v0.1.1'
 }
 
 jacocoTestCoverageVerification {

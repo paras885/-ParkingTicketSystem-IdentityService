@@ -9,6 +9,7 @@ import org.fsociety.identityservice.dao.ParkingSlotDAO;
 import org.fsociety.identityservice.dao.impl.ParkingSlotDAOImpl;
 import org.fsociety.identityservice.exception.BusinessLogicNonRetryableException;
 import org.fsociety.identityservice.exception.BusinessLogicRetryableException;
+import org.fsociety.identityservice.exception.DAONonRetryableException;
 import org.fsociety.identityservice.exception.DAORetryableException;
 import org.fsociety.identityservice.pojo.ParkingSlotSearchInput;
 import org.springframework.retry.annotation.Backoff;
@@ -20,6 +21,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 
 @Slf4j
 @Component(value = ParkingSlotBusinessLogicImpl.BEAN_IDENTIFIER)
@@ -87,6 +89,16 @@ public class ParkingSlotBusinessLogicImpl extends AbstractBaseCRUDBusinessLogic<
             } else {
                 return freeSlot.get(0);
             }
+    }
+
+    @Override
+    public Optional<ParkingSlot> vacantParkingSlot(final ParkingSlot vacantSlotRequest) {
+        try {
+            parkingSlotDAO.vacantParkingSlot(vacantSlotRequest);
+            return Optional.of(vacantSlotRequest);
+        } catch (final DAONonRetryableException exception) {
+            return Optional.empty();
+        }
     }
 
     @Override
