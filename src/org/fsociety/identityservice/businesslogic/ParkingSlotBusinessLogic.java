@@ -6,7 +6,6 @@ import org.fsociety.identityservice.exception.BusinessLogicRetryableException;
 import org.fsociety.identityservice.pojo.ParkingSlotSearchInput;
 
 import java.util.List;
-import java.util.Optional;
 
 public interface ParkingSlotBusinessLogic extends BaseBusinessLogic<ParkingSlot> {
 
@@ -16,16 +15,8 @@ public interface ParkingSlotBusinessLogic extends BaseBusinessLogic<ParkingSlot>
      * @throws BusinessLogicRetryableException which can occur because of mongodb failure.
      */
     List<ParkingSlot> getParkingSlotsBySearchInput(final ParkingSlotSearchInput input)
-        throws BusinessLogicRetryableException;
+            throws BusinessLogicRetryableException;
 
-    /**
-     * @param requirementsForSlot is an instance of {@link ParkingSlot} which hold requirements for eligible parking slot.
-     * @return output is also an instance of {@link ParkingSlot} which hold parkingSlotId and vacantStatus will be PRERESERVATION.
-     * @throws BusinessLogicRetryableException If in 3 tries we are not able to reserve any slot ask for fresh request.
-     * @throws BusinessLogicNonRetryableException No slot available.
-     */
-    ParkingSlot preReserveParkingSlot(final ParkingSlot requirementsForSlot)
-        throws BusinessLogicNonRetryableException, BusinessLogicRetryableException;
-
-    Optional<ParkingSlot> vacantParkingSlot(final ParkingSlot vacantSlotRequest);
+    ParkingSlot updateParkingSlot(final ParkingSlot updatedParkingSlot)
+            throws BusinessLogicNonRetryableException, BusinessLogicRetryableException;
 }

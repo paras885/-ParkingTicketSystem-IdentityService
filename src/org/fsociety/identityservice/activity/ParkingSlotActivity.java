@@ -11,7 +11,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -25,11 +24,11 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 
 import static org.fsociety.identityservice.activity.BuildingActivity.BUILDING_RESOURCE_URL;
 
+//TODO: Add reflection
 @Slf4j
 @RequestMapping(value = BUILDING_RESOURCE_URL + "/{buildingId}" + ParkingSlotActivity.PARKING_SLOT_RESOURCE_URL)
 @RestController
@@ -38,7 +37,8 @@ public class ParkingSlotActivity extends AbstractBaseCRUDActivity<ParkingSlot> {
     public final static String PARKING_SLOT_RESOURCE_URL = "/parkingSlots";
 
     public final static List<String> SUPPORTED_REQUEST_PARAMS_LIST_FOR_PARKING_SLOTS = Arrays.asList(
-        "companyId", "parkingSlotId", "vehicleType", "isReserved", "vacantStatus", "floorNumber", "limit");
+        "companyId", "parkingSlotId", "vehicleType", "isReserved", "vacantStatus", "floorNumber", "limit",
+            "parkedVehicleNumber");
 
     private final static Set<String> SUPPORTED_REQUEST_PARAMS_SET_FOR_PARKING_SLOTS =
         new HashSet<>(SUPPORTED_REQUEST_PARAMS_LIST_FOR_PARKING_SLOTS);
@@ -99,32 +99,18 @@ public class ParkingSlotActivity extends AbstractBaseCRUDActivity<ParkingSlot> {
             .count()) == receivedParams.size();
     }
 
-    @PostMapping(name = "Pre-reserve parking slot before final confirmation", value = "/preReservation")
-    @ResponseBody
-    public ResponseEntity<ParkingSlot> preReserveParkingSlot(@RequestBody final ParkingSlot requirementsForSlot) {
-            ResponseEntity<ParkingSlot> response = null;
-            try {
-                final ParkingSlot preReservedParkingSlot = businessLogic.preReserveParkingSlot(requirementsForSlot);
-                response = new ResponseEntity<ParkingSlot>(preReservedParkingSlot, HttpStatus.OK);
-            } catch (final BusinessLogicRetryableException retryableException) {
-                response = new ResponseEntity<>(null, HttpStatus.CONFLICT);
-            } catch (final BusinessLogicNonRetryableException nonRetryableException) {
-                response = new ResponseEntity<>(null, HttpStatus.BANDWIDTH_LIMIT_EXCEEDED);
-            }
 
-            return response;
-    }
-
-    @PutMapping(name = "Vacant parking slot for given parking slot and vehicle number",
-            value = "/{parkingSlotId}/vacantSlot")
+    @PutMapping(name = "Update Parking Slot", value = "/update")
     @ResponseBody
-    public ResponseEntity<ParkingSlot> vacantParkingSlot(@RequestBody final ParkingSlot vacantRequest) {
-        ResponseEntity<ParkingSlot> response = null;
-        final Optional<ParkingSlot> vacantParkingSlot = businessLogic.vacantParkingSlot(vacantRequest);
-        if (vacantParkingSlot.isPresent()) {
-            response = new ResponseEntity<ParkingSlot>(vacantParkingSlot.get(), HttpStatus.OK);
-        } else {
+    public ResponseEntity<ParkingSlot> updateParkingSlot(@RequestBody final ParkingSlot parkingSlot) {
+        ResponseEntity<ParkingSlot> response;
+        try {
+            final ParkingSlot updatedParkingSlot = businessLogic.updateParkingSlot(parkingSlot);
+            response = new ResponseEntity<>(updatedParkingSlot, HttpStatus.OK);
+        } catch (final BusinessLogicRetryableException retryableException) {
             response = new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+        } catch (final BusinessLogicNonRetryableException nonRetryableException) {
+            response = new ResponseEntity<>(null, HttpStatus.CONFLICT);
         }
 
         return response;
