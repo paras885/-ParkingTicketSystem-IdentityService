@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration monitorInterval="60">
+    <Properties>
+        <Property name="path">out/var/logs</Property>
+    </Properties>
+    <Appenders>
+        <Console name="Console-Appender" target="SYSTEM_OUT">
+            <PatternLayout>
+                <pattern>
+                    [%-5level] %d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %c{1} - %msg%n
+                </pattern>
+                >
+            </PatternLayout>
+        </Console>
+        <RollingFile name="Application-Appender" fileName="${path}/application_log.log"
+                     filePattern="${path}/application.%d{MM-dd-yyyy-HH-mm}.log.gz" ignoreException="false">
+            <PatternLayout>
+                <Pattern>
+                    [%-5level] %d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %c{1} - %msg%n
+                </Pattern>
+            </PatternLayout>
+            <TimeBasedTriggeringPolicy />
+        </RollingFile>
+        <RollingFile name="SpringBoot-Appender" fileName="${path}/springboot_log.log"
+                     filePattern="${path}/springboot_log.%d{MM-dd-yyyy-HH-mm}.log.gz" ignoreException="false">
+            <PatternLayout>
+                <pattern>
+                    [%-5level] %d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %c{1} - %msg%n
+                </pattern>
+            </PatternLayout>
+            <TimeBasedTriggeringPolicy />
+        </RollingFile>
+    </Appenders>
+    <Loggers>
+        <Logger name="org.springframework.web" level="info" additivity="false">
+            <AppenderRef ref="SpringBoot-Appender" />
+            <AppenderRef ref="Console-Appender" />
+        </Logger>
+        <Logger name="org.fsociety.identityservice" level="info" additivity="false">
+            <AppenderRef ref="Application-Appender" />
+        </Logger>
+        <Root level="info">
+            <AppenderRef ref="Console-Appender" />
+        </Root>
+    </Loggers>
+</Configuration>
